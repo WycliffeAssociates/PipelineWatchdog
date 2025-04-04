@@ -1,0 +1,8 @@
+services:
+  watchdog:
+    image: wycliffeassociates/pipeline-watchdog:{version}
+    environment:
+      - IntervalInMinutes=${INTERVAL_IN_MINUTES:-10}
+      - WACSUrl=${WACS_URL}
+      - ConnectionStrings__ServiceBus=${SERVICE_BUS_CONNECTION_STRING}
+      - ConnectionStrings__TableStorage=${TABLE_STORAGE_CONNECTION_STRING}
