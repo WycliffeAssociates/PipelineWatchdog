@@ -1,6 +1,7 @@
 ﻿using System.Diagnostics;
 using Core;
 using Microsoft.Extensions.Logging;
+using Telemetry;
 
 namespace Logic;
 
@@ -11,12 +12,14 @@ public class ReconcileLogic
     private readonly IReprocessor _reprocessor;
     private readonly ILogger _logger;
     private static readonly ActivitySource _activitySource = new(nameof(ReconcileLogic));
-    public ReconcileLogic(IRepoSource source, IRepoSource cached,  IReprocessor reprocessor, ILogger logger)
+    private readonly WatchdogMetrics? _metrics;
+    public ReconcileLogic(IRepoSource source, IRepoSource cached,  IReprocessor reprocessor, ILogger logger, WatchdogMetrics? metrics = null)
     {
         _source = source;
         _cached = cached;
         _reprocessor = reprocessor;
         _logger = logger;
+        _metrics = metrics;
     }
 
     public async Task RunAsync()
@@ -49,6 +52,8 @@ public class ReconcileLogic
         _logger.LogInformation("Found {Count} Repos to Delete", reposToDelete.Count);
         _logger.LogInformation("Found {Count} Repos to Create", reposToCreate.Count);
         
+        _metrics?.CreatesSent(reposToCreate.Count);
+        _metrics?.DeletesSent(reposToDelete.Count);
         foreach (var repo in reposToDelete)
         {
             await _reprocessor.SendDelete(repo);

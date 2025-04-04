@@ -4,6 +4,7 @@ using System.Text.Json.Serialization;
 using Core;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using Telemetry;
 
 namespace Implementation;
 
@@ -12,7 +13,8 @@ public class GiteaRepoSource: IRepoSource
     private static readonly ActivitySource _activitySource = new(nameof(GiteaRepoSource));
     private readonly HttpClient _client;
     private readonly ILogger<GiteaRepoSource> _logger;
-    public GiteaRepoSource(IConfiguration configuration, ILogger<GiteaRepoSource> logger)
+    private readonly WatchdogMetrics? _metrics;
+    public GiteaRepoSource(IConfiguration configuration, ILogger<GiteaRepoSource> logger, WatchdogMetrics? metrics = null )
     {
         _logger = logger;
          var baseUrl = configuration["WACSUrl"];
@@ -20,6 +22,7 @@ public class GiteaRepoSource: IRepoSource
             {
                 BaseAddress = new Uri(baseUrl + "/api/v1/")
             };
+        _metrics = metrics;
     }
     public async Task<List<Repo>> GetAllRepos()
     {
@@ -32,6 +35,7 @@ public class GiteaRepoSource: IRepoSource
         {
             try
             {
+                _metrics?.WacsRequestsSent(1);
                 var tmp = await _client.GetFromJsonAsync<RepoSearchResult>(
                     $"repos/search?page={currentPage}&limit={perPage}");
 
