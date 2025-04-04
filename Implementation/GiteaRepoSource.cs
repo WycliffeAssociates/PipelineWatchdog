@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using System.Net.Http.Json;
 using System.Text.Json.Serialization;
 using Core;
@@ -8,6 +9,7 @@ namespace Implementation;
 
 public class GiteaRepoSource: IRepoSource
 {
+    private static readonly ActivitySource _activitySource = new(nameof(GiteaRepoSource));
     private readonly HttpClient _client;
     private readonly ILogger<GiteaRepoSource> _logger;
     public GiteaRepoSource(IConfiguration configuration, ILogger<GiteaRepoSource> logger)
@@ -21,6 +23,7 @@ public class GiteaRepoSource: IRepoSource
     }
     public async Task<List<Repo>> GetAllRepos()
     {
+        using var activity = _activitySource.StartActivity();
         var noMoreToFetch = false;
         var currentPage = 0;
         var perPage = 100;

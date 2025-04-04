@@ -1,4 +1,5 @@
-﻿using System.Text.Json;
+﻿using System.Diagnostics;
+using System.Text.Json;
 using Azure.Core.Extensions;
 using Azure.Messaging.ServiceBus;
 using Core;
@@ -12,6 +13,7 @@ public class ServiceBusReprocessor : IReprocessor, IAsyncDisposable
 {
     private readonly ILogger<ServiceBusReprocessor> _logger;
     private readonly ServiceBusSender _sender;
+    private static readonly ActivitySource _activitySource = new(nameof(ServiceBusReprocessor));
     public ServiceBusReprocessor(IConfiguration configuration, ILogger<ServiceBusReprocessor> logging, IAzureClientFactory<ServiceBusClient> factory)
     {
         var serviceBusClient = factory.CreateClient("ServiceBusClient");
@@ -20,12 +22,14 @@ public class ServiceBusReprocessor : IReprocessor, IAsyncDisposable
     }
     public async Task SendCreate(Repo repo)
     {
+        using var activity = _activitySource.StartActivity();
         _logger.LogDebug("Sending Create");
         await _sender.SendMessageAsync(CreateMessage(repo.ToWACSMessage("repo", "created")));
     }
 
     public async Task SendDelete(Repo repo)
     {
+        using var activity = _activitySource.StartActivity();
         _logger.LogDebug("Sending Delete");
         await _sender.SendMessageAsync(CreateMessage(repo.ToWACSMessage("repo", "deleted")));
     }

@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using Azure;
 using Azure.Data.Tables;
 using Core;
@@ -10,6 +11,7 @@ public class TableStorageDataSource: IRepoDataSource
 {
     private readonly ILogger<ServiceBusReprocessor> _logger;
     private readonly TableClient _tableClient;
+    private static readonly ActivitySource _activitySource = new(nameof(TableStorageDataSource));
     public TableStorageDataSource(ILogger<ServiceBusReprocessor> logger, IConfiguration configuration)
     {
         _logger = logger;

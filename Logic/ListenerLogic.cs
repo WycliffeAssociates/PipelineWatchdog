@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using Core;
 using Microsoft.Extensions.Logging;
 
@@ -7,6 +8,7 @@ public class ListenerLogic
 {
     private readonly IRepoDataSource _repoDataSource;
     private readonly ILogger _logger;
+    private static readonly ActivitySource _activitySource = new(nameof(ListenerLogic));
     public ListenerLogic(IRepoDataSource repoDataSource, ILogger logger)
     {
         _repoDataSource = repoDataSource;
@@ -15,6 +17,7 @@ public class ListenerLogic
 
     public async Task Handle(WACSMessage message)
     {
+        using var activity = _activitySource.StartActivity();
         var actionType = GetActionType(message);
         switch (actionType)
         {

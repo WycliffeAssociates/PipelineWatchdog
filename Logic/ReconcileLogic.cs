@@ -1,4 +1,5 @@
-﻿using Core;
+﻿using System.Diagnostics;
+using Core;
 using Microsoft.Extensions.Logging;
 
 namespace Logic;
@@ -9,6 +10,7 @@ public class ReconcileLogic
     private readonly IRepoSource _cached;
     private readonly IReprocessor _reprocessor;
     private readonly ILogger _logger;
+    private static readonly ActivitySource _activitySource = new(nameof(ReconcileLogic));
     public ReconcileLogic(IRepoSource source, IRepoSource cached,  IReprocessor reprocessor, ILogger logger)
     {
         _source = source;
@@ -19,7 +21,7 @@ public class ReconcileLogic
 
     public async Task RunAsync()
     {
-
+        using var activity = _activitySource.StartActivity();
         var sourceTask = _source.GetAllRepos();
         var cachedTask = _cached.GetAllRepos();
         
