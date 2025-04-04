@@ -1,0 +1,33 @@
+name: Docker Build
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+    - name: Load secret
+      uses: 1password/load-secrets-action@v1
+      with:
+        # Export loaded secrets as environment variables
+        export-env: true
+      env:
+        OP_SERVICE_ACCOUNT_TOKEN: ${{ secrets.OP_SERVICE_ACCOUNT_TOKEN }}
+        DOCKER_HUB_USER: "op://DevOps/dockerhub-adminwa-token/username"
+        DOCKER_HUB_TOKEN: "op://DevOps/dockerhub-adminwa-token/credential"
+    - name: Log in to DockerHub
+      uses: docker/login-action@v2
+      with:
+        username: ${{ env.DOCKERHUB_USERNAME }}
+        password: ${{ env.DOCKER_PASSWORD }}
+
+    - name: Build and push Docker image
+      run: |
+        docker build -t wycliffeassociates/pipeline-watchdog:latest . -f PipelineWatchdog/Dockerfile
+        docker push wycliffeassociates/pipeline-watchdog:latest
