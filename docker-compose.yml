@@ -6,4 +6,4 @@ services:
       - WACSUrl=${WACS_URL}
       - ConnectionStrings__ServiceBus=${SERVICE_BUS_CONNECTION_STRING}
       - ConnectionStrings__TableStorage=${TABLE_STORAGE_CONNECTION_STRING}
-      - AzureMonitor__ConnectionString=${AZURE_MONITOR_CONNECTION_STRING}
+      - APPLICATIONINSIGHTS_CONNECTION_STRING=${AZURE_MONITOR_CONNECTION_STRING}
