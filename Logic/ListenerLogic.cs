@@ -41,9 +41,9 @@ public class ListenerLogic
     {
         return message.EventType switch
         {
-            "repo" when message.Action == "updated" => ActionType.Update,
-            "repo" when message.Action == "created" => ActionType.Create,
-            "repo" when message.Action == "deleted" => ActionType.Delete,
+            "repository" when message.Action == "updated" => ActionType.Update,
+            "repository" when message.Action == "created" => ActionType.Create,
+            "repository" when message.Action == "deleted" => ActionType.Delete,
             "push" => ActionType.Update,
             _ => ActionType.Unknown
         };

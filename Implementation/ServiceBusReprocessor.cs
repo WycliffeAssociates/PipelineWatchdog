@@ -24,14 +24,14 @@ public class ServiceBusReprocessor : IReprocessor, IAsyncDisposable
     {
         using var activity = _activitySource.StartActivity();
         _logger.LogDebug("Sending Create");
-        await _sender.SendMessageAsync(CreateMessage(repo.ToWACSMessage("repo", "created")));
+        await _sender.SendMessageAsync(CreateMessage(repo.ToWACSMessage("repository", "created")));
     }
 
     public async Task SendDelete(Repo repo)
     {
         using var activity = _activitySource.StartActivity();
         _logger.LogDebug("Sending Delete");
-        await _sender.SendMessageAsync(CreateMessage(repo.ToWACSMessage("repo", "deleted")));
+        await _sender.SendMessageAsync(CreateMessage(repo.ToWACSMessage("repository", "deleted")));
     }
     private ServiceBusMessage CreateMessage(WACSMessage input)
     {

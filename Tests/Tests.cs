@@ -24,7 +24,7 @@ public class Tests
         // Test Create
         var message = new WACSMessage()
         {
-            EventType = "repo",
+            EventType = "repository",
             Action = "created",
             RepoId = 1,
             DefaultBranch = "main",
