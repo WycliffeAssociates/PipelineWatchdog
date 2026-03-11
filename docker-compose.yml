@@ -1,6 +1,7 @@
 services:
   watchdog:
     image: wycliffeassociates/pipeline-watchdog:${version}
+    restart: unless-stopped
     environment:
       - IntervalInMinutes=${INTERVAL_IN_MINUTES:-10}
       - WACSUrl=${WACS_URL}
