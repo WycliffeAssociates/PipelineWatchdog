@@ -46,7 +46,8 @@ class Program
 
     private static void ConfigureOpenTelemetry(HostApplicationBuilder builder)
     {
-        var applicationInsightsEnabled = Environment.GetEnvironmentVariable("APPLICATIONINSIGHTS_CONNECTION_STRING") != null;
+        var appInsightsConnectionString = builder.Configuration["APPLICATIONINSIGHTS_CONNECTION_STRING"];
+        var applicationInsightsEnabled = appInsightsConnectionString != null;
         builder.Services.AddOpenTelemetry()
             .ConfigureResource(resource =>
             {
@@ -61,7 +62,7 @@ class Program
                 config.AddOtlpExporter();
                 if (applicationInsightsEnabled)
                 {
-                    config.AddAzureMonitorTraceExporter();
+                    config.AddAzureMonitorTraceExporter(o => o.ConnectionString = appInsightsConnectionString!);
                 }
             })
             .WithMetrics(config =>
@@ -70,7 +71,7 @@ class Program
                 config.AddOtlpExporter();
                 if (applicationInsightsEnabled)
                 {
-                    config.AddAzureMonitorMetricExporter();
+                    config.AddAzureMonitorMetricExporter(o => o.ConnectionString = appInsightsConnectionString!);
                 }
             })
             ;
@@ -82,7 +83,7 @@ class Program
             config.AddOtlpExporter();
             if (applicationInsightsEnabled)
             {
-                config.AddAzureMonitorLogExporter();
+                config.AddAzureMonitorLogExporter(o => o.ConnectionString = appInsightsConnectionString!);
             }
         });
     }
